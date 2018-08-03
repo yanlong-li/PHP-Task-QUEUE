@@ -1,0 +1,23 @@
+{
+  "name": "non0/task_queue",
+  "description": "基于redis队列的PHP任务队列",
+  "minimum-stability": "dev",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "yanlongli",
+      "email": "admin@yanlongli.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "non0\\task_queue\\":"src/"
+    }
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.phpcomposer.com"
+    }
+  }
+}
