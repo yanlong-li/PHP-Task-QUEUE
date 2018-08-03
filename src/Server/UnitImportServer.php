@@ -53,6 +53,7 @@ class UnitImportServer implements BaseServer
         $this->filename = $argc['filename'];
         $this->db = new Builder(TaskQueue::getConfig('mysqli.'));
         $this->id = $taskId = $argc['id'];
+        $this->db->table('sys_task_queue')->wherePk($taskId)->update(['status' => 1, 'update_time' => time(), 'result_value' => json_encode(['errmsg' => '正在执行'])]);
         if(file_exists($this->filename)){
             $data = $this->fileToArray($this->filename);
             if (is_array($data)) {
