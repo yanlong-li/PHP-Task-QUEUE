@@ -26,24 +26,29 @@ class TaskQueue
     {
         //任务不过期
         ini_set('max_execution_time', '0');
+        if (empty(self::$config))
+            echo '配置初始化完成' . PHP_EOL;
+        else
+            echo '配置刷新成功' . PHP_EOL;
         self::$config = $config;
         self::$Redis = new support\Redis();
     }
 
     public static function start()
     {
+        echo '启动自检' . PHP_EOL;
         if (self::checkStart()) {
+            echo '自检完成,开起队列服务' . PHP_EOL;
             //将服务状态设置为开启
             self::$Redis->main->set('server', true);
             do {
-                usleep((int)self::getConfig('queue.useelp'));
                 ImplementQueue::main();
-                echo '线程休眠中，等待下次启动'.date(DATE_W3C,time()).PHP_EOL;
+                echo '线程休眠中，等待下次启动' . date(DATE_W3C, time()) . PHP_EOL;
+                usleep((int)self::getConfig('queue.useelp'));
             } while (self::$Redis->main->get('server'));
-            echo self::$Redis->main->get('server').PHP_EOL;
+            echo "服务成功关闭" . PHP_EOL;
         } else {
-            echo 'checkStart不通过';
-            return false;
+            echo '自检不通过,请主动检查' . PHP_EOL;
         }
     }
 

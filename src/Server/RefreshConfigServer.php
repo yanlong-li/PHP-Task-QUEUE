@@ -15,8 +15,8 @@ class RefreshConfigServer implements BaseServer
 {
     public function main($argc)
     {
+        echo '执行刷新配置文件任务' . PHP_EOL;
         TaskQueue::init(require 'config.php');
-        echo '执行刷新配置文件任务'.PHP_EOL;
-        return true;
+        return ['status' => true];
     }
 }

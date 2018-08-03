@@ -20,5 +20,12 @@ return [
         'host' => '127.0.0.1',
         'port' => '6379',
         'db' => 5
+    ],
+    'mysqli' => [
+        'dsn' => 'mysql:host=127.0.0.1;dbname=dsx_check',
+        'username' => 'root',
+        'password' => 'root',
+        'charset' => 'utf8',
+        'tablePrefix' => 'ck_',
     ]
 ];

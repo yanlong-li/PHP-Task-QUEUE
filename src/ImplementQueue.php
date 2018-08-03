@@ -17,10 +17,12 @@ class ImplementQueue
     {
         $task = self::getTaskQueue();
         if (isset($task) && is_array($task) && !empty($task) && self::checkTask($task[1])) {
+            echo '执行服务:'.self::$taskInfo['name'].PHP_EOL;
             $serverName = "non0\\task_queue\\Server\\" . self::$taskInfo['name'];
             $main = new $serverName();
-            $main->main(isset(self::$taskInfo['value']) ? self::$taskInfo['value'] : []);
-            self::setReturnQueue($task[1], true, '任务执行完毕');
+            $result = $main->main(isset(self::$taskInfo['value']) ? self::$taskInfo['value'] : []);
+            self::setReturnQueue($task[1], isset($result['status']) ? $result['status'] : true, isset($result['errmsg']) ? $result['errmsg'] : '任务执行完成');
+            echo '服务结束:'.self::$taskInfo['name'].PHP_EOL;
         }
     }
 
@@ -32,7 +34,7 @@ class ImplementQueue
      */
     protected static function setReturnQueue($task, $status = true, $msg = '')
     {
-        TaskQueue::$Redis->main->rPush(TaskQueue::getConfig('resultqueue.key'), json_encode([$task, 'status' => $status, 'err' => $msg]));
+        TaskQueue::$Redis->main->rPush(TaskQueue::getConfig('resultqueue.key'), json_encode([$task, 'status' => $status, 'errmsg' => $msg]));
     }
 
     /**
