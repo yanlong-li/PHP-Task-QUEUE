@@ -11,7 +11,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "non0\\task_queue\\":"src/"
+      "non0\\task_queue\\":"application/"
     }
   },
     "repositories": {

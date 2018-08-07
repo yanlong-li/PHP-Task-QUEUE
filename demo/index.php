@@ -19,7 +19,7 @@ $config = require 'config.php';
 
 //添加一个任务  添加任务功能可用任意方式按照特定格式写入redis指定名称的队列中
 TaskQueue::$Redis->main->rPush(TaskQueue::getConfig('queue.key'), json_encode(['name' => 'RefreshConfigServer', 'value' => '']));
-//TaskQueue::$Redis->main->rPush(TaskQueue::getConfig('queue.key'), json_encode(['name' => 'UnitImport', 'value' => ['filename' => 'C:\Users\yanlo\PhpstormProjects\system_task\demo\test.json', 'id' => 1]]));
+//TaskQueue::$Redis->main->rPush(TaskQueue::getConfig('queue.key'), json_encode(['name' => 'UnitImport', 'value' => ['filename' => 'C:\\Users\\yanlo\\PhpstormProjects\\system_task\\demo\\test.json', 'id' => 1]]));
 
 //开始执行队列任务
 //TaskQueue::start();
