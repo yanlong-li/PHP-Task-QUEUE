@@ -1,13 +1,15 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: yanlo
+ * User: Yanlongli
  * Date: 2018/8/2
  * Time: 15:07
  */
 
 namespace non0\task_queue;
 
+use non0\task_queue\support\Control;
+use non0\task_queue\support\Log;
 use non0\task_queue\support\Redis;
 
 class TaskQueue
@@ -22,33 +24,57 @@ class TaskQueue
      */
     public static $Redis = null;
 
+    /**
+     * @param $config
+     */
     public static function init($config)
     {
         //任务不过期
         ini_set('max_execution_time', '0');
         if (empty(self::$config))
-            echo '配置初始化完成' . PHP_EOL;
+            $log = ('配置初始化完成');
         else
-            echo '配置刷新成功' . PHP_EOL;
+            $log = ('配置刷新成功');
         self::$config = $config;
+        Log::info($log);
         self::$Redis = new support\Redis();
     }
 
-    public static function start()
+    public static function start($argv)
     {
-        echo '启动自检' . PHP_EOL;
+        //动态调度控制
+        new Control($argv);
+
+        log::info('启动自检');
         if (self::checkStart()) {
-            echo '自检完成,开起队列服务' . PHP_EOL;
+            log::info('自检完成,开起队列服务');
             //将服务状态设置为开启
             self::$Redis->main->set('server', true);
             do {
                 ImplementQueue::main();
-                echo '线程休眠中，等待下次启动' . date(DATE_W3C, time()) . PHP_EOL;
-                usleep((int)self::getConfig('queue.useelp'));
+                Log::Trace('线程休眠中，等待下次启动');
+
+                //检测Redis是否连接正常
+                if (!self::$Redis->main->ping()) {
+                    Log::debug('Redis超时关闭');
+                    Log::debug('尝试恢复Redis连接');
+                    self::$Redis = new support\Redis();
+                    if (!self::$Redis->main->ping()) {
+                        Log::warning("Redis无法恢复，请检查Redis服务是否正常");
+                    } else {
+                        log::info("Redis已恢复,任务继续,推荐将睡眠时间减少");
+                    }
+                } else {
+                    //正常则读取服务状态是否开启
+                    if (self::$Redis->main->get('server')) {
+                        usleep((int)self::getConfig('queue.useelp'));
+                    }
+                    //服务被设置为关闭，不进入休眠状态并自动退出循环
+                }
             } while (self::$Redis->main->get('server'));
-            echo "服务成功关闭" . PHP_EOL;
+            log::info("服务成功关闭");
         } else {
-            echo '自检不通过,请主动检查' . PHP_EOL;
+            log::error("自检不通过,请主动检查配置文件");
         }
     }
 
@@ -72,7 +98,7 @@ class TaskQueue
      * @param null $config
      * @return array|mixed|null
      */
-    public static function getConfig($name, $default = null, $config = null)
+    public static function getConfig($name = '', $default = null, $config = null)
     {
         if ($config == null) {
             $config = self::$config;
@@ -98,6 +124,15 @@ class TaskQueue
     public static function setConfig($name, $value)
     {
         self::$config[$name] = $value;
+    }
+
+    /**
+     * @param string $ServerName
+     * @param array $param
+     */
+    public static function addTask($ServerName, $param = [])
+    {
+        self::$Redis->main->rPush(TaskQueue::getConfig('queue.key'), json_encode(['name' => $ServerName, 'value' => $param]));
     }
 
 }

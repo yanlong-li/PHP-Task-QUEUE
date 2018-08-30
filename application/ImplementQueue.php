@@ -1,13 +1,17 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: yanlo
+ * User: Yanlongli
  * Date: 2018/8/2
  * Time: 16:33
  */
 
 namespace non0\task_queue;
 
+
+use non0\task_queue\server\BaseServer;
+use non0\task_queue\support\dbToJson;
+use non0\task_queue\support\Log;
 
 class ImplementQueue
 {
@@ -17,12 +21,15 @@ class ImplementQueue
     {
         $task = self::getTaskQueue();
         if (isset($task) && is_array($task) && !empty($task) && self::checkTask($task[1])) {
-            echo '执行服务:' . self::$taskInfo['name'] . PHP_EOL;
-            $serverName = "non0\\task_queue\\Server\\" . self::$taskInfo['name'];
+            Log::info('执行服务:' . self::$taskInfo['name']);// . PHP_EOL;
+            $serverName = "non0\\task_queue\\server\\" . self::$taskInfo['name'];
+            /**
+             * @var $main BaseServer
+             */
             $main = new $serverName();
             $result = $main->main(isset(self::$taskInfo['value']) ? self::$taskInfo['value'] : []);
             self::setReturnQueue($task[1], isset($result['status']) ? $result['status'] : true, isset($result['errmsg']) ? $result['errmsg'] : '任务执行完成');
-            echo '服务结束:' . self::$taskInfo['name'] . PHP_EOL;
+            Log::info('服务结束:' . self::$taskInfo['name']);//. PHP_EOL;
         }
     }
 
@@ -46,7 +53,7 @@ class ImplementQueue
         try {
             return TaskQueue::$Redis->main->blPop(TaskQueue::getConfig('queue.key'), TaskQueue::getConfig('queue.timeout'));
         } catch (\Exception $exception) {
-            echo '未发现队列任务，继续等待' . PHP_EOL;
+            Log::Trace('未发现队列任务，继续等待');//. PHP_EOL;
             return false;
         }
     }
@@ -64,20 +71,21 @@ class ImplementQueue
 
         $taskInfo = json_decode($task, true);
         if (!$taskInfo) {
-            echo '未定义错误' . PHP_EOL;
+            Log::warning('未定义错误');// . PHP_EOL;
             self::setReturnQueue($task, false, '未定义错误');
             return false;
         }
         if (!isset($taskInfo['name'])) {
-            echo '未定义服务名称' . PHP_EOL;
+            Log::notice('未定义服务名称');
             self::setReturnQueue($task, false, '未定义服务名称');
             return false;
         }
         if (strtolower(substr($taskInfo['name'], -6)) != 'server') {
             $taskInfo['name'] .= 'Server';
         }
-        if (!file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'Server' . DIRECTORY_SEPARATOR . $taskInfo['name'] . '.php')) {
+        if (!file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . $taskInfo['name'] . '.php')) {
             self::setReturnQueue($task, false, '未发现服务执行程序');
+            Log::notice('未发现服务执行程序:' . __DIR__ . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . $taskInfo['name'] . '.php');
             return false;
         }
 

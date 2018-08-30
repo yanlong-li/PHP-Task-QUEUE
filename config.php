@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: yanlo
+ * User: Yanlongli
  * Date: 2018/8/2
  * Time: 15:31
  */
@@ -10,8 +10,8 @@ return [
     //队列
     'queue' => [
         'key' => 'non0tasklist',//任务队列key
-        'timeout' => 5,//获取队列阻塞时常秒
-        'useelp' => 1000,//休眠微秒
+        'timeout' => 60,//获取队列阻塞时常秒
+        'useelp' => 10000,//休眠微秒
     ],
     'resultqueue' => [
         'key' => 'non0resultlist',
@@ -27,5 +27,11 @@ return [
         'password' => 'root',
         'charset' => 'utf8',
         'tablePrefix' => 'ck_',
-    ]
+    ],
+    //日志
+    'log' => array(
+        'name' => 'non0.taskqueue',
+        'level' => \Monolog\Logger::DEBUG,
+        'file' => './runtime/log/log.log',
+    ),
 ];

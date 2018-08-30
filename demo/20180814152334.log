@@ -1,0 +1,9 @@
+nohup: ignoring input
+配置初始化完成
+
+Fatal error: Uncaught Error: Class 'Redis' not found in C:\Users\yanlo\PhpstormProjects\system_task\application\support\Redis.php:23
+Stack trace:
+#0 C:\Users\yanlo\PhpstormProjects\system_task\application\TaskQueue.php(34): non0\task_queue\support\Redis->__construct()
+#1 C:\Users\yanlo\PhpstormProjects\system_task\demo\index.php(18): non0\task_queue\TaskQueue::init(Array)
+#2 {main}
+  thrown in C:\Users\yanlo\PhpstormProjects\system_task\application\support\Redis.php on line 23

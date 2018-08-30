@@ -15,12 +15,6 @@ namespace non0\task_queue\support;
 
 class dbToJson
 {
-//    function arrayToJson($data)
-//    {
-//        if (is_array($data))
-//            return json_encode($data);
-//        return $data;
-//    }
 
     /**
      * @param $string
@@ -47,9 +41,6 @@ class dbToJson
             $arr = json_decode($line,true);
             if(!is_array($arr))
                 continue;
-//            foreach ($arr as $key => $val) {
-//                $arr[$key] = $this->arrayToJson($val);
-//            }
             $data[] = $arr;
         }
         fclose($fh);
@@ -57,9 +48,3 @@ class dbToJson
     }
 
 }
-//$c = new dbToJson();
-//$param_arr = getopt('i:o:');
-//if(isset($param_arr['i']) && isset($param_arr['o']))
-//$c->start($param_arr['i'],$param_arr['o']);
-//else
-//    echo "请设定-i 输入文件路径，-o 输出文件路径";

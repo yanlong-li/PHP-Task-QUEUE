@@ -1,13 +1,13 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: yanlo
+ * User: Yanlongli
  * Date: 2018/8/2
  * Time: 16:12
  * 任务接口类
  */
 
-namespace non0\task_queue\Server;
+namespace non0\task_queue\server;
 
 
 interface BaseServer

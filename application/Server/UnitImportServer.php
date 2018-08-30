@@ -1,12 +1,12 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: yanlo
+ * User: Yanlongli
  * Date: 2018/8/2
  * Time: 16:17
  */
 
-namespace non0\task_queue\Server;
+namespace non0\task_queue\server;
 
 
 use non0\task_queue\support\dbToJson;
@@ -474,7 +474,6 @@ class UnitImportServer implements BaseServer
             $data['population'] = '服务人口(人)';
             $data['family'] = '服务家庭(户)';
         }
-//        $this->type = 'blowdown_outlet';
         if ($this->type === 'blowdown_outlet') {
             $data['VillageID'] = '普查小区代码';
             $data['BlowdownOutletID'] = '排污口编码';
